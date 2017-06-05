@@ -1,0 +1,7 @@
+http://www.oschina.net/translate/javascript-based-face-detection-method
+
+http://www.webhek.com/post/face-detection.html
+
+
+
+https://github.com/auduno/headtrackr

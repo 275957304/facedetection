@@ -1,0 +1,92 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1">
+<title>faceDetection</title>
+<meta name="description" content="faceDetection"/>
+<meta name="keyword" content="faceDetection"/>
+<style>
+.face_box{position: relative;}
+.face{position: absolute; border: 2px solid red; display: block;}
+</style>
+</head>
+<body>
+<div class="face_box">
+    <img id="picture" src="img/2.jpg">
+</div>
+<canvas id="canvas"></canvas>
+<!--
+    Uncaught SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': The canvas has been tainted by cross-origin data.
+    原因：createGSCanvas()调用了getImageData函数，但是图片存储在本地文件，
+    默认为没有域名，chrome浏览器判定为跨域才报错！
+    解决方法：1、将图片放置在服务器中，由服务器返回给客户端浏览器，遵循同源策略；2、在IE、Firefox浏览器中打开。
+-->
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="js/jquery.facedetection.js"></script>
+<script type="text/javascript">
+
+	$(function () {
+
+		$('#picture').faceDetection({
+			complete: function (faces) {
+				if (faces.length == 0) { //说明没有检测到人脸
+					alert("无人脸")
+				} else {
+					console.log(faces)
+
+                    var sx = faces[0].x * faces[0].scaleX,
+                        sy = faces[0].y * faces[0].scaleY,
+                        swidth = faces[0].width  * faces[0].scaleX,
+                        sheight = faces[0].height * faces[0].scaleY;
+
+                    //canvas 绘制头像
+                    var canvas = document.getElementById('canvas'),
+                        ctx = canvas.getContext('2d');
+                    canvas.width = swidth;
+                    canvas.height = sheight;
+                    var faceImg = new Image();
+                        faceImg.src = $('#picture').attr('src');
+                        faceImg.onload = function(){
+                            ctx.drawImage(faceImg,sx,sy,swidth,sheight,0,0,swidth,sheight);
+                        }
+
+                    for (var i = 0; i < faces.length; i++) {
+                        $('<div>', {
+                            'class':'face',
+                            'css': {
+                                'left':     faces[i].x * faces[i].scaleX + 'px',
+                                'top':      faces[i].y * faces[i].scaleY + 'px',
+                                'width':    faces[i].width  * faces[i].scaleX + 'px',
+                                'height':   faces[i].height * faces[i].scaleY + 'px'
+                            }
+                        })
+                        .insertAfter(this);
+                    }
+
+				}
+			},
+			error: function (code, message) {
+				console.log("complete回调函数出错" + message)
+			}
+		})
+
+	});
+	/*
+	返回的数据：
+	插件返回的脸部数据
+	x — 图片中人脸的X坐标
+	y — 图片中人脸的Y坐标
+	width — 人脸的宽度
+	height — 人脸的高度
+	positionX — 相对于文档的X坐标
+	positionY — 相对于文档的Y坐标
+	offsetX — 相对于父元素的X偏移
+	offsetY — 相对于父元素的Y偏移
+	scaleX — 实际显示和原始宽度比
+	scaleY — 实际显示和原始高度比
+	confidence — 准确度
+	*/
+</script>
+</body>
+</html>
