@@ -16,6 +16,8 @@
     <img id="picture" src="img/2.jpg">
 </div>
 <canvas id="canvas"></canvas>
+
+<div id="imgBox"></div>
 <!--
     Uncaught SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': The canvas has been tainted by cross-origin data.
     原因：createGSCanvas()调用了getImageData函数，但是图片存储在本地文件，
@@ -27,6 +29,8 @@
 <script type="text/javascript">
 
 	$(function () {
+        var canvas = document.getElementById("canvas"),
+            ctx = canvas.getContext('2d');
 
 		$('#picture').faceDetection({
 			complete: function (faces) {
@@ -41,14 +45,13 @@
                         sheight = faces[0].height * faces[0].scaleY;
 
                     //canvas 绘制头像
-                    var canvas = document.getElementById('canvas'),
-                        ctx = canvas.getContext('2d');
                     canvas.width = swidth;
                     canvas.height = sheight;
                     var faceImg = new Image();
                         faceImg.src = $('#picture').attr('src');
                         faceImg.onload = function(){
                             ctx.drawImage(faceImg,sx,sy,swidth,sheight,0,0,swidth,sheight);
+                            $("#imgBox").append('<img src='+   canvas.toDataURL("image/png")  +'>')
                         }
 
                     for (var i = 0; i < faces.length; i++) {
@@ -71,6 +74,9 @@
 			}
 		})
 
+
+
+
 	});
 	/*
 	返回的数据：
@@ -87,6 +93,9 @@
 	scaleY — 实际显示和原始高度比
 	confidence — 准确度
 	*/
+
+
+
 </script>
 </body>
 </html>
